@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helicopter Star Collector</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #87CEEB; /* Light Sky Blue */
+            font-family: sans-serif;
+            color: #333;
+            touch-action: none; /* Prevent scrolling on touch devices */
+            overflow: hidden; /* Hide scrollbars */
+        }
+        canvas {
+            border: 2px solid #333;
+            background-color: #ffffff;
+            display: block; /* Prevent extra space below canvas */
+        }
+        #controls-info {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            max-width: 90%;
+        }
+        #controller-status {
+            margin-top: 5px;
+            font-weight: bold;
+            color: #006400; /* Dark Green */
+        }
+         /* Hide default audio player controls */
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Helicopter Star Collector!</h1>
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    <p id="score">Stars: 0</p>
+    <p id="controls-info">
+        Controls: Arrow Up/Down | Click/Tap Screen | Controller D-Pad/Left Stick Up/Down
+    </p>
+    <p id="controller-status">Controller: Not Detected</p>
+
+    <!-- Optional: Sound effect for collecting stars -->
+    <audio id="collectSound" src="collect.wav" preload="auto"></audio>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const controllerStatusElement = document.getElementById('controller-status');
+        const collectSound = document.getElementById('collectSound');
+
+        // --- Game Settings ---
+        const HELICOPTER_WIDTH = 100;
+        const HELICOPTER_HEIGHT = 80;
+        const HELICOPTER_SPEED = 4; // Pixels per frame when moving
+        const STAR_SIZE = 50;
+        const STAR_SPEED = 1;
+        const STAR_SPAWN_RATE = 250; // Lower number = more frequent stars (frames)
+
+        // --- Game State ---
+        let helicopter = {
+            x: 50,
+            y: canvas.height / 2 - HELICOPTER_HEIGHT / 2,
+            width: HELICOPTER_WIDTH,
+            height: HELICOPTER_HEIGHT,
+            velocityY: 0 // How much to move vertically each frame
+        };
+        let stars = [];
+        let score = 0;
+        let frameCount = 0;
+        let keys = { ArrowUp: false, ArrowDown: false };
+        let isPointerDown = false; // For mouse/touch
+        let gamePad = null;
+        let gameRunning = true; // Can be used to pause/stop
+
+        // --- Drawing Functions ---
+
+        function drawHelicopter() {
+            // Simple Helicopter Body
+            ctx.fillStyle = '#f5a300'; // Crimson Red
+            ctx.fillRect(helicopter.x, helicopter.y, helicopter.width, helicopter.height);
+
+            // Simple Rotor
+            ctx.fillStyle = '#A9A9A9'; // Dark Gray
+            ctx.fillRect(helicopter.x + helicopter.width / 2 - 2, helicopter.y - 10, 4, 10); // Mast
+            ctx.fillRect(helicopter.x + helicopter.width / 2 - 25, helicopter.y - 15, 50, 5); // Blade
+
+            // Simple Tail
+            ctx.fillStyle = '#DC143C';
+            ctx.fillRect(helicopter.x - 15, helicopter.y + helicopter.height / 2 - 5, 15, 10);
+        }
+
+        function drawStar(star) {
+            ctx.fillStyle = '#FFD700'; // Gold
+            ctx.beginPath();
+            // Simple 5-point star drawing logic
+            let rot = Math.PI / 2 * 3;
+            let x = star.x + star.size / 2;
+            let y = star.y + star.size / 2;
+            let step = Math.PI / 5;
+            let outerRadius = star.size / 2;
+            let innerRadius = star.size / 4;
+
+            ctx.moveTo(x, y - outerRadius)
+            for (let i = 0; i < 5; i++) {
+                ctx.lineTo(x + Math.cos(rot) * outerRadius, y + Math.sin(rot) * outerRadius)
+                rot += step
+                ctx.lineTo(x + Math.cos(rot) * innerRadius, y + Math.sin(rot) * innerRadius)
+                rot += step
+            }
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawScore() {
+            scoreElement.textContent = `Stars: ${score}`;
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // --- Game Logic Functions ---
+
+        function updateHelicopter(inputUp, inputDown) {
+            // Determine movement based on input
+            if (inputUp) {
+                helicopter.velocityY = -HELICOPTER_SPEED;
+            } else if (inputDown) {
+                helicopter.velocityY = HELICOPTER_SPEED;
+            } else {
+                // Optional: Gentle drift down when no input
+                // helicopter.velocityY = 0.5;
+                helicopter.velocityY = 0; // Hover in place
+            }
+
+            // Update position
+            helicopter.y += helicopter.velocityY;
+
+            // Prevent going off-screen
+            if (helicopter.y < 0) {
+                helicopter.y = 0;
+            }
+            if (helicopter.y + helicopter.height > canvas.height) {
+                helicopter.y = canvas.height - helicopter.height;
+            }
+        }
+
+        function spawnStar() {
+            let star = {
+                x: canvas.width, // Start off-screen right
+                y: Math.random() * (canvas.height - STAR_SIZE), // Random vertical position
+                size: STAR_SIZE,
+                speed: STAR_SPEED + Math.random() * 1 // Add slight speed variation
+            };
+            stars.push(star);
+        }
+
+        function updateStars() {
+            frameCount++;
+            if (frameCount % STAR_SPAWN_RATE === 0) {
+                spawnStar();
+            }
+
+            for (let i = stars.length - 1; i >= 0; i--) {
+                stars[i].x -= stars[i].speed;
+
+                // Remove stars that go off-screen left
+                if (stars[i].x + stars[i].size < 0) {
+                    stars.splice(i, 1);
+                }
+            }
+        }
+
+        function checkCollisions() {
+            for (let i = stars.length - 1; i >= 0; i--) {
+                let star = stars[i];
+
+                // Simple Axis-Aligned Bounding Box (AABB) collision check
+                // Add some padding to make collection easier for a child
+                const PADDING = 10;
+                if (
+                    helicopter.x < star.x + star.size - PADDING &&
+                    helicopter.x + helicopter.width > star.x + PADDING &&
+                    helicopter.y < star.y + star.size - PADDING &&
+                    helicopter.y + helicopter.height > star.y + PADDING
+                ) {
+                    // Collision detected!
+                    stars.splice(i, 1); // Remove the star
+                    score++;
+                    playSound();
+                }
+            }
+        }
+
+        function playSound() {
+            if (collectSound && collectSound.readyState >= 2) { // Check if ready
+                 // Reset playback position and play
+                collectSound.currentTime = 0;
+                collectSound.play().catch(e => console.log("Sound play failed:", e)); // Catch potential errors
+            }
+        }
+
+        // --- Input Handling ---
+
+        // Keyboard
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                 e.preventDefault(); // Prevent page scrolling
+                 keys[e.key] = true;
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                keys[e.key] = false;
+            }
+        });
+
+        // Mouse / Touch
+        canvas.addEventListener('pointerdown', (e) => {
+            e.preventDefault(); // Prevent unwanted selection/scrolling
+            isPointerDown = true;
+        });
+         // Listen on window to catch pointer up even if it happens outside canvas
+        window.addEventListener('pointerup', () => {
+            isPointerDown = false;
+        });
+        window.addEventListener('contextmenu', (e) => e.preventDefault()); // Prevent right-click menu
+
+
+        // Gamepad API
+        function handleGamepad() {
+            let inputUp = false;
+            let inputDown = false;
+
+            if (gamePad) {
+                // Check D-Pad (buttons 12=up, 13=down standard mapping)
+                if (gamePad.buttons[12] && gamePad.buttons[12].pressed) {
+                    inputUp = true;
+                }
+                if (gamePad.buttons[13] && gamePad.buttons[13].pressed) {
+                    inputDown = true;
+                }
+
+                // Check Left Analog Stick (axis 1 typically Y, negative is up)
+                // Add a "deadzone" to prevent drift
+                const deadzone = 0.3;
+                if (gamePad.axes[1] < -deadzone) {
+                    inputUp = true;
+                }
+                if (gamePad.axes[1] > deadzone) {
+                    inputDown = true;
+                }
+            }
+            return { inputUp, inputDown };
+        }
+
+        window.addEventListener("gamepadconnected", (event) => {
+            console.log("Gamepad connected:", event.gamepad.id);
+            // Only take the first connected gamepad for simplicity
+            if (!gamePad) {
+                 gamePad = event.gamepad;
+            }
+            controllerStatusElement.textContent = `Controller: ${gamePad.id}`;
+            controllerStatusElement.style.color = '#006400'; // Dark Green
+        });
+
+        window.addEventListener("gamepaddisconnected", (event) => {
+            console.log("Gamepad disconnected:", event.gamepad.id);
+             if (gamePad && gamePad.index === event.gamepad.index) {
+                 gamePad = null;
+                 controllerStatusElement.textContent = "Controller: Not Detected";
+                 controllerStatusElement.style.color = '#DC143C'; // Crimson Red
+             }
+        });
+
+        function pollGamepads() {
+            const gamepads = navigator.getGamepads();
+             // Check if the previously assigned gamepad is still connected
+            if (gamePad && !gamepads[gamePad.index]) {
+                gamePad = null; // It got disconnected without an event
+                controllerStatusElement.textContent = "Controller: Not Detected";
+                controllerStatusElement.style.color = '#DC143C';
+            } else if (!gamePad && gamepads[0]) {
+                 // If no gamepad assigned, try to grab the first available one
+                 gamePad = gamepads[0];
+                 controllerStatusElement.textContent = `Controller: ${gamePad.id}`;
+                 controllerStatusElement.style.color = '#006400';
+            }
+            // Update the reference in case button/axis info changed
+            if (gamePad) {
+                 gamePad = gamepads[gamePad.index];
+            }
+        }
+
+
+        // --- Game Loop ---
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            // --- Poll Inputs ---
+            pollGamepads(); // Important to call this each frame
+            const gamepadInput = handleGamepad();
+
+            // Combine inputs (any "up" input triggers up, etc.)
+            const moveUp = keys.ArrowUp || isPointerDown || gamepadInput.inputUp;
+            const moveDown = keys.ArrowDown || gamepadInput.inputDown; // Note: No pointer down equivalent needed
+
+
+            // --- Update ---
+            updateHelicopter(moveUp, moveDown);
+            updateStars();
+            checkCollisions();
+
+            // --- Draw ---
+            clearCanvas();
+            drawHelicopter();
+            stars.forEach(drawStar);
+            drawScore(); // Updates the HTML element directly
+
+            // --- Next Frame ---
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- Start Game ---
+        spawnStar(); // Start with one star
+        drawScore(); // Initial score display
+        requestAnimationFrame(gameLoop); // Start the loop!
+
+    </script>
+
+</body>
+</html>
