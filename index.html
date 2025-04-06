@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Game Hub</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f9ff;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        .game-card {
+            transition: transform 0.3s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-8px);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-blue-600 mb-2">Kids game hub</h1>
+            <p class="text-xl text-gray-600">Fun and educational games for children</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Helicopter Game Card -->
+            <div class="game-card card-shadow bg-white rounded-lg overflow-hidden border-4 border-yellow-400">
+                <div class="relative">
+                    <div class="h-48 bg-blue-500 flex items-center justify-center">
+                        <div class="w-24 h-24 bg-yellow-400 rounded-full relative">
+                            <!-- Simple helicopter icon -->
+                            <div class="absolute w-16 h-8 bg-red-500 rounded-lg left-4 top-8"></div>
+                            <div class="absolute w-4 h-16 bg-red-500 rounded-lg left-10 top-4"></div>
+                            <div class="absolute w-20 h-2 bg-gray-800 rounded-full left-2 top-2 transform-origin-center"></div>
+                        </div>
+                    </div>
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full">Ages 4-8</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Helicopter Star Adventure!</h2>
+                    <p class="text-gray-600 mb-4">
+                        Help your helicopter collect stars in this exciting adventure! Control your helicopter and navigate to catch as many stars as possible.
+                    </p>
+                    <ul class="mb-6">
+                        <li class="flex items-center mb-1">
+                            <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            Collect stars for points
+                        </li>
+                        <li class="flex items-center mb-1">
+                            <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            Level up as you progress
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            Unlock special characters
+                        </li>
+                    </ul>
+                    <a href="helicopter-game/index.html" class="block w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-center transition duration-300">
+                        Play now!
+                    </a>
+                </div>
+            </div>
+
+            <!-- Coming Soon Card -->
+            <div class="game-card card-shadow bg-white rounded-lg overflow-hidden border-4 border-gray-300 opacity-75">
+                <div class="h-48 bg-gray-200 flex items-center justify-center">
+                    <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Coming soon</h2>
+                    <p class="text-gray-600 mb-4">
+                        More exciting games are on the way! Check back soon for new adventures.
+                    </p>
+                    <div class="mb-6 h-20"></div>
+                    <button disabled class="block w-full bg-gray-300 text-gray-600 font-bold py-3 px-4 rounded-lg text-center cursor-not-allowed">
+                        Coming soon
+                    </button>
+                </div>
+            </div>
+
+            <!-- Another Coming Soon Card -->
+            <div class="game-card card-shadow bg-white rounded-lg overflow-hidden border-4 border-gray-300 opacity-75">
+                <div class="h-48 bg-gray-200 flex items-center justify-center">
+                    <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Coming soon</h2>
+                    <p class="text-gray-600 mb-4">
+                        More exciting games are on the way! Check back soon for new adventures.
+                    </p>
+                    <div class="mb-6 h-20"></div>
+                    <button disabled class="block w-full bg-gray-300 text-gray-600 font-bold py-3 px-4 rounded-lg text-center cursor-not-allowed">
+                        Coming soon
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-16 text-center text-gray-500">
+            <p>&copy; 2025 Kids Game Hub. All games are designed for educational purposes.</p>
+        </footer>
+    </div>
+</body>
+</html>

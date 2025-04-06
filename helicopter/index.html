@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Helicopter Star Adventure</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <h1 class="game-title">Helicopter Star Adventure!</h1>
+
+    <div class="game-container">
+      <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+      <div class="game-ui">
+        <div class="score-display" id="score">Stars: 0</div>
+        <div class="level-display" id="level">Level: 1</div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="character-select" id="characterSelect"></div>
+
+      <div class="parent-controls" id="parentButton">⚙️ Parent Settings</div>
+      <div class="parent-panel" id="parentPanel">
+        <h3>Parent Controls</h3>
+        <div>
+          <label for="difficultySlider">Game Speed:</label>
+          <input type="range" id="difficultySlider" min="1" max="5" value="3" />
+        </div>
+        <div>
+          <label for="soundToggle">Sound:</label>
+          <input type="checkbox" id="soundToggle" checked />
+        </div>
+        <div>
+          <label for="tutorialToggle">Show Tutorial:</label>
+          <button id="tutorialToggle">Show</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sound effects -->
+    <audio id="collectSound" src="assets/collect.wav" preload="auto"></audio>
+    <audio id="levelUpSound" src="assets/levelup.wav" preload="auto"></audio>
+    <audio id="bgMusic" src="assets/background.mp3" loop preload="auto"></audio>
+
+    <!-- Game Scripts -->
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/objects.js"></script>
+    <script type="module" src="js/input.js"></script>
+    <script type="module" src="js/sound.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/tutorial.js"></script>
+    <script type="module" src="js/game.js"></script>
+  </body>
+</html>

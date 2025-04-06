@@ -1,0 +1,150 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #87ceeb; /* Light Sky Blue */
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  color: #333;
+  touch-action: none; /* Prevent scrolling on touch devices */
+  overflow: hidden; /* Hide scrollbars */
+}
+canvas {
+  border: 4px solid #333;
+  border-radius: 12px;
+  background-color: #ffffff;
+  display: block; /* Prevent extra space below canvas */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+.game-title {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  color: #ff5722;
+  text-shadow: 2px 2px 0px #fff;
+}
+.game-container {
+  position: relative;
+}
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #eee;
+  border-radius: 10px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background-color: #ff9800;
+  width: 0%;
+  transition: width 0.3s;
+}
+.character-select {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+.character-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 4px solid #333;
+  cursor: pointer;
+  background-size: cover;
+  transition: transform 0.2s;
+}
+.character-btn:hover {
+  transform: scale(1.1);
+}
+.character-btn.locked {
+  filter: grayscale(1);
+}
+.character-btn.locked::after {
+  content: "🔒";
+  font-size: 24px;
+  position: relative;
+  top: 15px;
+  left: 15px;
+}
+.game-ui {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.score-display {
+  font-size: 1.5em;
+  background: #fff;
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: 3px solid #333;
+}
+.level-display {
+  font-size: 1.5em;
+  background: #fff;
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: 3px solid #333;
+}
+/* Hide default audio player controls */
+audio {
+  display: none;
+}
+.parent-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  z-index: 100;
+  font-size: 0.8em;
+  cursor: pointer;
+}
+.parent-panel {
+  position: absolute;
+  top: 40px;
+  right: 10px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  z-index: 101;
+  display: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+.tutorial-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  z-index: 1000;
+}
+.tutorial-text {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+.tutorial-image {
+  width: 200px;
+  height: 150px;
+  background-color: #fff;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.tutorial-button {
+  background: #ff9800;
+  border: none;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 20px;
+  cursor: pointer;
+}
